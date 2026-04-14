@@ -15,8 +15,9 @@ public class ApplicationDbInit : DbContext
         
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        
+        modelBuilder.Entity<User>()
+            .HasKey(u => u.id);
     }
 }
