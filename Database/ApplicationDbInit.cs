@@ -17,34 +17,78 @@ public class ApplicationDbInit : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>(builder =>
-        {
-            builder.ToTable("Users");
-            builder.HasKey(p => p.id);
-            builder.Property(p => p.id)
-                .HasColumnName("id")
-                .ValueGeneratedOnAdd();
-            builder.Property(p => p.name)
-                .HasColumnName("name")
-                .IsRequired();
-            builder.Property(p => p.password)
-                .HasColumnName("password")
-                .IsRequired();
-            
-        });
-        modelBuilder.Entity<Account>(builder =>
-        {
-            builder.ToTable("Accounts");
-            builder.HasKey(p => p.id);
-            builder.Property(p => p.id)
-                .HasColumnName("id")
-                .ValueGeneratedOnAdd();
+        var userEntity = modelBuilder.Entity<User>()
+            .ToTable("users");
+        userEntity.HasKey(x => x.id);
+        userEntity.Property(x => x.id)
+            .HasColumnName("id")
+            .UseIdentityColumn();
+        userEntity.Property(x => x.login)
+            .HasColumnName("login")
+            .IsRequired();
+        userEntity.Property(x => x.password)
+            .HasColumnName("password")
+            .IsRequired();
 
-            
-            builder.HasOne(p => p.Users)
-                .WithOne(u => u.Account)
-                .HasForeignKey<Account>(f => f.userId)
-                .OnDelete(DeleteBehavior.Cascade);
-        });
-    }
+        
+        var accountEntity = modelBuilder.Entity<Account>()
+            .ToTable("accounts");
+        
+        accountEntity.HasKey(x => x.id);
+        accountEntity.Property(x => x.id)
+            .HasColumnName("id")
+            .UseIdentityColumn();
+        accountEntity.Property(x => x.balance)
+            .HasColumnName("balance")
+            .IsRequired();
+        accountEntity.HasOne<User>()
+            .WithOne()
+            .HasForeignKey<Account>(x => x.id)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        var sessionEntity = modelBuilder.Entity<Sessions>()
+            .ToTable("sessions");
+        sessionEntity.HasKey(x => x.userid);
+        sessionEntity.Property(x => x.userid)
+            .HasColumnName("userid")
+            .IsRequired();
+        sessionEntity.Property(x => x.token)
+            .HasColumnName("token")
+            .IsRequired();
+        sessionEntity.Property(x => x.expiresAt)
+            .HasColumnName("expiresAt")
+            .IsRequired();
+        sessionEntity.HasOne<User>()
+            .WithOne()
+            .HasForeignKey<Sessions>(x => x.userid)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        var transactionEntity = modelBuilder.Entity<Transaction>()
+            .ToTable("transactions");
+        transactionEntity.HasKey(x => x.id);
+        transactionEntity.Property(x => x.id)
+            .HasColumnName("id")
+            .UseIdentityColumn();
+        transactionEntity.Property(x => x.date)
+            .HasColumnName("date")
+            .IsRequired();
+        transactionEntity.Property(x => x.amount)
+            .HasColumnName("amount")
+            .IsRequired();
+        transactionEntity.Property(x => x.receiverAccountId)
+            .HasColumnName("receiver_AccountId")
+            .IsRequired();
+        transactionEntity.Property(x => x.senderAccountId)
+            .HasColumnName("sender_AccountId")
+            .IsRequired();
+        
+        transactionEntity.HasOne<Account>()
+            .WithMany()
+            .HasForeignKey(x => x.senderAccountId)
+            .OnDelete(DeleteBehavior.Cascade);
+        transactionEntity.HasOne<Account>()
+            .WithMany()
+            .HasForeignKey(x => x.receiverAccountId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }   
 }
