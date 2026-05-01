@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using WebApplication3.Models;
 
 namespace WebApplication3.Database;
@@ -29,7 +30,8 @@ public class ApplicationDbInit : DbContext
         userEntity.Property(x => x.password)
             .HasColumnName("password")
             .IsRequired();
-
+        
+        SeedUserData(userEntity);
         
         var accountEntity = modelBuilder.Entity<Account>()
             .ToTable("accounts");
@@ -90,5 +92,27 @@ public class ApplicationDbInit : DbContext
             .WithMany()
             .HasForeignKey(x => x.receiverAccountId)
             .OnDelete(DeleteBehavior.Cascade);
-    }   
+        
+    }
+
+    private void SeedUserData(EntityTypeBuilder<User> UserEntity)
+
+    {
+        UserEntity.HasData(
+            new User
+            {
+                id = 1,
+                login = "admin",
+                password = "admin",
+                name = "admin",
+            },
+            new User
+            {
+                id = 2,
+                login = "user",
+                password = "user",
+                name = "user",
+            }
+        );
+    }
 }
