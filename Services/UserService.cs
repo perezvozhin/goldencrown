@@ -7,9 +7,11 @@ namespace WebApplication3.Services;
 public class UserService : IuserService
 {
     private readonly  ApplicationDbInit _context;
-    public UserService(ApplicationDbInit context)
+    private readonly iAccountService _accountService;
+    public UserService(ApplicationDbInit context, iAccountService accountService)
     {
         _context = context;
+        _accountService = accountService;
     }
 
     public async Task<bool> Register(string username, string password, string name)
@@ -34,7 +36,7 @@ public class UserService : IuserService
         
         _context.Users.Add(NewUser);
         await _context.SaveChangesAsync();
-        
+        await _accountService.CreateAccount(username);
         return true;
     }
 }
