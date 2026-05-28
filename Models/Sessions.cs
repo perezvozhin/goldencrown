@@ -1,8 +1,8 @@
 ﻿namespace WebApplication3.Models;
 
-public class Sessions
+public class Session
 {
-    public int userid { get; set; }
-    public string token { get; set; }
-    public DateTime expiresAt { get; set; }
+    public int Userid { get; set; }
+    public string Token { get; set; }
+    public DateTime ExpiresAt { get; set; }
 }

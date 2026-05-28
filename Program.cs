@@ -14,16 +14,19 @@ builder.Services.AddDbContext<ApplicationDbInit>(options =>
 
 builder.Services.AddScoped<IuserService, UserService>();
 builder.Services.AddScoped<iAccountService, AccountService>();
-
-
+builder.Services.AddScoped<IFinanceService, FinanceService>();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
 
 var app = builder.Build();
-
+app.UseSwagger();
+app.UseSwaggerUI();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-
+app.MapControllers();
 app.Run();

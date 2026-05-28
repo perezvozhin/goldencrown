@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebApplication3.Database;
 using WebApplication3.Models;
+using WebApplication3.Utils;
 
 namespace WebApplication3.Services;
 
@@ -14,18 +15,14 @@ public class UserService : IuserService
         _accountService = accountService;
     }
 
-    public async Task<bool> Register(string username, string password, string name)
+    public async Task<Result> Register(string username, string password, string name)
     {   
         var exists = await _context.Users.FirstOrDefaultAsync(x => x.login == username);
         if (exists != null)
         {
-            return false;
+            return Result.Fail("User already exists");
         }
-
-        if (password.Length < 6 || String.IsNullOrWhiteSpace(password))
-        {
-            return false;
-        }
+        
 
         var NewUser = new User
         {
@@ -37,6 +34,33 @@ public class UserService : IuserService
         _context.Users.Add(NewUser);
         await _context.SaveChangesAsync();
         await _accountService.CreateAccount(username);
-        return true;
+        return Result.Success();
+        
+    }
+
+    public async Task<Result<string>> LoginAsync(string login, string password)
+    {
+        User? user = await _context.Users.FirstOrDefaultAsync(x => x.login == login && x.password == password);
+        if (user == null)
+        {
+            return Result<string>.Fail("User not found");
+        }
+
+        var token = Guid.NewGuid().ToString();
+        var session = new Session
+        {
+            Userid = user.id,
+            Token = token,
+            ExpiresAt = DateTime.UtcNow.AddHours(1),
+        };
+        var existingSession = await _context.Sessions.FirstOrDefaultAsync(x => x.Userid == user.id);
+        if (existingSession != null)
+        {
+            _context.Sessions.Remove(existingSession);
+        }
+        _context.Sessions.Add(session);
+        await _context.SaveChangesAsync();
+        return Result<string>.Success(token);
     }
 }
+

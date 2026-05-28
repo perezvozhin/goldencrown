@@ -3,9 +3,9 @@
 public class Transaction
 {
     public  int id { get; set; }
-    public int senderAccountId { get; set; }
-    public int receiverAccountId { get; set; }
-    public DateTime date { get; set; }
-    public decimal amount { get; set; }
+    public int SenderAccountId { get; set; }
+    public int ReceiverAccountId { get; set; }
+    public DateTime Date { get; set; }
+    public decimal Amount { get; set; }
     
 }

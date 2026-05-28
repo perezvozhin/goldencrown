@@ -9,7 +9,7 @@ public class ApplicationDbInit : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Account> Accounts { get; set; }
     public DbSet<Transaction> Transactions { get; set; }
-    public DbSet<Sessions> Sessions { get; set; }
+    public DbSet<Session> Sessions { get; set; }
 
     public ApplicationDbInit(DbContextOptions<ApplicationDbInit> options) : base(options)
     {
@@ -48,21 +48,21 @@ public class ApplicationDbInit : DbContext
             .HasForeignKey<Account>(x => x.id)
             .OnDelete(DeleteBehavior.Cascade);
         
-        var sessionEntity = modelBuilder.Entity<Sessions>()
+        var sessionEntity = modelBuilder.Entity<Session>()
             .ToTable("sessions");
-        sessionEntity.HasKey(x => x.userid);
-        sessionEntity.Property(x => x.userid)
+        sessionEntity.HasKey(x => x.Userid);
+        sessionEntity.Property(x => x.Userid)
             .HasColumnName("userid")
             .IsRequired();
-        sessionEntity.Property(x => x.token)
+        sessionEntity.Property(x => x.Token)
             .HasColumnName("token")
             .IsRequired();
-        sessionEntity.Property(x => x.expiresAt)
+        sessionEntity.Property(x => x.ExpiresAt)
             .HasColumnName("expiresAt")
             .IsRequired();
         sessionEntity.HasOne<User>()
             .WithOne()
-            .HasForeignKey<Sessions>(x => x.userid)
+            .HasForeignKey<Session>(x => x.Userid)
             .OnDelete(DeleteBehavior.Cascade);
         
         var transactionEntity = modelBuilder.Entity<Transaction>()
@@ -71,26 +71,26 @@ public class ApplicationDbInit : DbContext
         transactionEntity.Property(x => x.id)
             .HasColumnName("id")
             .UseIdentityColumn();
-        transactionEntity.Property(x => x.date)
+        transactionEntity.Property(x => x.Date)
             .HasColumnName("date")
             .IsRequired();
-        transactionEntity.Property(x => x.amount)
+        transactionEntity.Property(x => x.Amount)
             .HasColumnName("amount")
             .IsRequired();
-        transactionEntity.Property(x => x.receiverAccountId)
+        transactionEntity.Property(x => x.ReceiverAccountId)
             .HasColumnName("receiver_AccountId")
             .IsRequired();
-        transactionEntity.Property(x => x.senderAccountId)
+        transactionEntity.Property(x => x.SenderAccountId)
             .HasColumnName("sender_AccountId")
             .IsRequired();
         
         transactionEntity.HasOne<Account>()
             .WithMany()
-            .HasForeignKey(x => x.senderAccountId)
+            .HasForeignKey(x => x.SenderAccountId)
             .OnDelete(DeleteBehavior.Cascade);
         transactionEntity.HasOne<Account>()
             .WithMany()
-            .HasForeignKey(x => x.receiverAccountId)
+            .HasForeignKey(x => x.ReceiverAccountId)
             .OnDelete(DeleteBehavior.Cascade);
         
     }
